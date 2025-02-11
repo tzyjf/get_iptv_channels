@@ -48,16 +48,16 @@ def unpad(s):
     return p
 class prpcrypt():
     def __init__(self,key):
-        self.key = key + '0'*16
+        self.key = key + '0'* (24-len(key)) #密码为24位长度，不足的补0
         self.mode = DES3.MODE_ECB
-    def encrypt(self, text): #加密文本字符串,返回 HEX文本
+    def encrypt(self, text): #加密文本字符串,返回大写字母的HEX文本
         text = pad(text)
         cryptor = DES3.new(self.key, self.mode)
         x = len(text) % 8
         if x != 0:
             text = text + '\0' * (8 - x)
-        self.ciphertext = cryptor.encrypt(text)
-        return self.ciphertext.hex()
+        self.ciphertext = cryptor.encrypt(text.encode('utf-8'))
+        return self.ciphertext.hex().upper()
     def decrypt(self, text):#需要解密的字符串，字符串为十六进制的字符串  如"a34f3e3583"....
         try:
             cryptor = DES3.new(self.key, self.mode)
